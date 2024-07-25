@@ -1,12 +1,14 @@
 {
   "name": "renoma",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Opinionated package health checks",
   "type": "module",
   "author": "Bjorn Lu",
   "license": "MIT",
   "bin": "./src/index.js",
-  "scripts": {},
+  "scripts": {
+    "cli": "node src/index.js"
+  },
   "files": [
     "src"
   ],

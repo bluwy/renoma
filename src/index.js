@@ -30,6 +30,7 @@ const ignorePkgNames = args.ignore ? args.ignore.split(',') : []
 
 /** @type {Map<string, true | string>} */
 const cache = new Map()
+let hasError = false
 
 for (const metadata of dependencyMetadatas) {
   const pkgName = metadata.pkgGraphPath[metadata.pkgGraphPath.length - 1]
@@ -53,9 +54,14 @@ for (const metadata of dependencyMetadatas) {
 
   if (resultText) {
     console.log(resultText)
+    hasError = true
   } else {
     console.log(green('✔ No linting errors!') + '\n')
   }
 
   cache.set(cacheKey, resultText ? title : true)
+}
+
+if (hasError) {
+  process.exit(1)
 }
