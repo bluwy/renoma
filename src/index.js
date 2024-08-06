@@ -19,7 +19,8 @@ const args = mri(process.argv.slice(2), {
 })
 
 if (args.help) {
-  console.log(`$ renoma --help
+  console.log(`\
+$ renoma --help
 
 A recursive node modules analyzer with opinionated package health checks.
 
@@ -27,12 +28,12 @@ Usage
   $ renoma [options]
 
 Options
-  -h, --help      Displays this message.
+  -h, --help      Display this message.
   --limit         Set a limit on how many packages are checked.
   --ignore        Ignore some packages (comma-separated).
-  `);
+`)
 
-  process.exit(0);
+  process.exit(0)
 }
 
 const packageJsonPath = findClosestPkgJsonPath(process.cwd())
