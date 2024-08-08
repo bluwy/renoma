@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import mri from 'mri'
+import { parseArgs } from 'node:util'
 import { lintPkgDir } from './eslint.js'
 import {
   bold,
@@ -10,15 +10,16 @@ import {
   red
 } from './utils.js'
 
-const args = mri(process.argv.slice(2), {
-  string: ['limit', 'ignore'],
-  boolean: ['help'],
-  alias: {
-    h: 'help'
+const args = parseArgs({
+  options: {
+    help: { type: 'boolean', alias: 'h' },
+    limit: { type: 'string' },
+    'error-limit': { type: 'string' },
+    ignore: { type: 'string' }
   }
 })
 
-if (args.help) {
+if (args.values.help) {
   console.log(`\
 $ renoma --help
 
@@ -43,18 +44,19 @@ if (!packageJsonPath) {
   process.exit(1)
 }
 
-const crawlLimit = Number(args.limit)
-const dependencyMetadatas = crawlDependencies(
-  packageJsonPath,
-  Number.isNaN(crawlLimit) ? undefined : crawlLimit
-)
+// CLI args
+const crawlLimit = args.values.limit ? Number(args.values.limit) : undefined
+const ignorePkgNames = args.values.ignore ? args.values.ignore.split(',') : []
+const errorLimit = args.values['error-limit']
+  ? Number(args.values['error-limit'])
+  : undefined
 
-const ignorePkgNames = args.ignore ? args.ignore.split(',') : []
-const errorLimit = args['error-limit'] ? Number(args['error-limit']) : undefined
-
+// Metadata
 /** @type {Map<string, true | string>} */
 const cache = new Map()
 let errorCount = 0
+
+const dependencyMetadatas = crawlDependencies(packageJsonPath, crawlLimit)
 
 for (const metadata of dependencyMetadatas) {
   const pkgName = metadata.pkgGraphPath[metadata.pkgGraphPath.length - 1]

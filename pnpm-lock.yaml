@@ -20,9 +20,6 @@ importers:
       jsonc-eslint-parser:
         specifier: ^2.4.0
         version: 2.4.0
-      mri:
-        specifier: ^1.2.0
-        version: 1.2.0
 
 packages:
 
@@ -303,10 +300,6 @@ packages:
 
   module-replacements@2.2.0:
     resolution: {integrity: sha512-l+AhjmMWyQL/SYZCt6lKusf0ssJKqdoAg58RhSkmZNBwAzQkBLwFTnzT/dwwkd7HnOwLhf40MTuKKxCAJ+qIPQ==}
-
-  mri@1.2.0:
-    resolution: {integrity: sha512-tzzskb3bG8LvYGFF/mDTpq3jpI6Q9wc3LEmBaghu+DdCssd1FakN7Bc0hVNmEyGq1bq3RgfkCb3cmQLpNPOroA==}
-    engines: {node: '>=4'}
 
   ms@2.1.2:
     resolution: {integrity: sha512-sGkPx+VjMtmA6MX27oA4FBFELFCZZ4S4XqeGOXCv68tT+jb3vk/RyaKWP0PTKyWtmLSM0b+adUTEvbs1PEaH2w==}
@@ -718,8 +711,6 @@ snapshots:
       brace-expansion: 1.1.11
 
   module-replacements@2.2.0: {}
-
-  mri@1.2.0: {}
 
   ms@2.1.2: {}
 
