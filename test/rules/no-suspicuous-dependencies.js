@@ -23,16 +23,15 @@ ruleTester.run('no-suspicious-dependencies', rule, {
     {
       code: `{ "dependencies": {  "foo": "^1.0.0", "bar": "latest" } }`,
       filename: 'package.json'
+    },
+    {
+      code: `{ "dependencies": {  "foo": "workspace:*" } }`,
+      filename: 'package.json'
     }
   ],
   invalid: [
     {
       code: `{ "dependencies": { "foo": "https://example.com" } }`,
-      filename: 'package.json',
-      errors: 1
-    },
-    {
-      code: `{ "dependencies": { "foo": "link:./custom" } }`,
       filename: 'package.json',
       errors: 1
     },

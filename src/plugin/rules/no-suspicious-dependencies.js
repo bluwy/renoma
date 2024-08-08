@@ -19,7 +19,12 @@ export const rule = {
             const dependency = node.key.value
             /** @type {string} */
             const value = node.value.value
-            if (value.includes('/') || value.includes(':')) {
+            if (
+              (value.includes('/') || value.includes(':')) &&
+              !value.startsWith('workspace:') &&
+              !value.startsWith('file:') &&
+              !value.startsWith('link:')
+            ) {
               context.report({
                 node,
                 messageId: 'default',
