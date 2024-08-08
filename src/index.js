@@ -30,6 +30,7 @@ Usage
 Options
   -h, --help      Display this message.
   --limit         Set a limit on how many packages are checked.
+  --error-limit   Set a limit on how many packages with errors are checked.
   --ignore        Ignore some packages (comma-separated).
 `)
 
@@ -49,10 +50,11 @@ const dependencyMetadatas = crawlDependencies(
 )
 
 const ignorePkgNames = args.ignore ? args.ignore.split(',') : []
+const errorLimit = args['error-limit'] ? Number(args['error-limit']) : undefined
 
 /** @type {Map<string, true | string>} */
 const cache = new Map()
-let hasError = false
+let errorCount = 0
 
 for (const metadata of dependencyMetadatas) {
   const pkgName = metadata.pkgGraphPath[metadata.pkgGraphPath.length - 1]
@@ -76,7 +78,12 @@ for (const metadata of dependencyMetadatas) {
 
   if (resultText) {
     console.log(resultText)
-    hasError = true
+    errorCount++
+
+    if (errorLimit && errorCount >= errorLimit) {
+      console.log(`Exiting as reached ${errorLimit} error limit`)
+      break
+    }
   } else {
     console.log(green('✔ No linting errors!') + '\n')
   }
@@ -84,6 +91,6 @@ for (const metadata of dependencyMetadatas) {
   cache.set(cacheKey, resultText ? title : true)
 }
 
-if (hasError) {
+if (errorCount) {
   process.exit(1)
 }
