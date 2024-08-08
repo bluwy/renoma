@@ -2,6 +2,7 @@ import { ESLint } from 'eslint'
 import depend from 'eslint-plugin-depend'
 import regexp from 'eslint-plugin-regexp'
 import * as jsoncParser from 'jsonc-eslint-parser'
+import * as renoma from './plugin/index.js'
 
 // Click on table of https://ota-meshi.github.io/eslint-plugin-regexp/rules/#best-practices
 // and run this to get all best practices name
@@ -39,6 +40,18 @@ const baseEslintConfig = {
         '**/vendor/**',
         '**/repos/**'
       ]
+    },
+
+    // custom eslint checks
+    renoma.configs.recommended,
+    {
+      files: ['package.json'],
+      languageOptions: {
+        parser: jsoncParser
+      },
+      rules: {
+        'renoma/no-suspicious-dependencies': 'warn'
+      }
     },
 
     // eslint-plugin-depend
