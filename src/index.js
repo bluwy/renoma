@@ -15,7 +15,8 @@ const args = parseArgs({
     help: { type: 'boolean', alias: 'h' },
     limit: { type: 'string' },
     'error-limit': { type: 'string' },
-    ignore: { type: 'string' }
+    ignore: { type: 'string' },
+    'hide-passing': { type: 'boolean' }
   }
 })
 
@@ -33,6 +34,7 @@ Options
   --limit         Set a limit on how many packages are checked.
   --error-limit   Set a limit on how many packages with errors are checked.
   --ignore        Ignore some packages (comma-separated).
+  --hide-passing  Whether to hide packages with no linting errors.
 `)
 
   process.exit(0)
@@ -50,6 +52,7 @@ const ignorePkgNames = args.values.ignore ? args.values.ignore.split(',') : []
 const errorLimit = args.values['error-limit']
   ? Number(args.values['error-limit'])
   : undefined
+const hidePassing = args.values['hide-passing']
 
 // Metadata
 /** @type {Map<string, true | string>} */
@@ -63,14 +66,28 @@ for (const metadata of dependencyMetadatas) {
   if (ignorePkgNames.includes(pkgName)) continue
 
   const title = metadata.pkgGraphPath.join(' > ')
-  console.log(bold(title + ':'))
+
+  // If hidePassing is not enabled, we can always show the title so that the user knows
+  // which packages are being checked now. If it's enabled, we hide it until we know the
+  // result of the linting.
+  if (!hidePassing) {
+    console.log(bold(title + ':'))
+  }
 
   const cacheKey = `${pkgName}@${metadata.pkgVersion}`
   if (cache.has(cacheKey)) {
     const result = cache.get(cacheKey)
+    // `true` means there's no linting errors
     if (result === true) {
-      console.log(green('✔ No linting errors!') + '\n')
-    } else {
+      if (!hidePassing) {
+        console.log(green('✔ No linting errors!') + '\n')
+      }
+    }
+    // `string` points to the first package path that has the linting errors
+    else {
+      if (hidePassing) {
+        console.log(bold(title + ':'))
+      }
       console.log(red(`✖ Has lint errors same as ${result}\n`))
     }
     continue
@@ -79,6 +96,9 @@ for (const metadata of dependencyMetadatas) {
   const resultText = await lintPkgDir(metadata.pkgDir)
 
   if (resultText) {
+    if (hidePassing) {
+      console.log(bold(title + ':'))
+    }
     console.log(resultText)
     errorCount++
 
@@ -86,7 +106,7 @@ for (const metadata of dependencyMetadatas) {
       console.log(`Exiting as reached ${errorLimit} error limit`)
       break
     }
-  } else {
+  } else if (!hidePassing) {
     console.log(green('✔ No linting errors!') + '\n')
   }
 

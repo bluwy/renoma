@@ -18,6 +18,9 @@ npx renoma --error-limit 2
 
 # Ignore some packages (comma-separated)
 npx renoma --ignore my-pkg,other-pkg
+
+# Hide packages that have no lint errors
+npx renoma --hide-passing
 ```
 
 ## License
