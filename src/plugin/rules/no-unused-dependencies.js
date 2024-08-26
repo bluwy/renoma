@@ -58,9 +58,18 @@ export const rule = {
             for (const file of files) {
               if (file.dirent.isFile()) {
                 if (
-                  !['.js', '.ts', '.jsx', '.tsx', '.svelte', '.vue'].includes(
-                    path.extname(file.filePath)
-                  )
+                  ![
+                    '.js',
+                    '.mjs',
+                    '.cjs',
+                    '.ts',
+                    '.cts',
+                    '.mts',
+                    '.jsx',
+                    '.tsx',
+                    '.svelte',
+                    '.vue'
+                  ].includes(path.extname(file.filePath))
                 ) {
                   continue
                 }
