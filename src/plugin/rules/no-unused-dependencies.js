@@ -39,11 +39,10 @@ export const rule = {
               const depPkgJson = JSON.parse(
                 fs.readFileSync(pkgJsonPath, 'utf8')
               )
-              for (let peer of Object.keys(depPkgJson.peerDependencies || {})) {
-                if (peer.startsWith('@types/')) {
-                  peer = peer.slice(7).replace('__', '/')
-                }
-                dependencies.delete(peer)
+              for (const peer of Object.keys(
+                depPkgJson.peerDependencies || {}
+              )) {
+                dependencies.delete(normalizeDependencyName(peer))
               }
             })
 
@@ -76,13 +75,14 @@ export const rule = {
 
                 const content = fs.readFileSync(file.filePath, 'utf-8')
                 for (const dependency of dependencies) {
+                  const depName = normalizeDependencyName(dependency)
                   if (
-                    content.includes(`"${dependency}"`) ||
-                    content.includes(`'${dependency}'`) ||
-                    content.includes(`\`${dependency}\``) ||
-                    content.includes(`"${dependency}/`) ||
-                    content.includes(`'${dependency}/`) ||
-                    content.includes(`\`${dependency}/`)
+                    content.includes(`"${depName}"`) ||
+                    content.includes(`'${depName}'`) ||
+                    content.includes(`\`${depName}\``) ||
+                    content.includes(`"${depName}/`) ||
+                    content.includes(`'${depName}/`) ||
+                    content.includes(`\`${depName}/`)
                   ) {
                     dependencies.delete(dependency)
                   }
@@ -124,5 +124,18 @@ export const rule = {
     }
 
     return {}
+  }
+}
+
+function normalizeDependencyName(dependency) {
+  if (dependency.startsWith('@types/')) {
+    dependency = dependency.slice(7)
+    if (dependency.includes('__')) {
+      return '@' + dependency.replace('__', '/')
+    } else {
+      return dependency
+    }
+  } else {
+    return dependency
   }
 }
