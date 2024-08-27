@@ -4,6 +4,7 @@ export const config = (plugin) => ({
     renoma: plugin
   },
   rules: {
-    'renoma/no-suspicious-dependencies': 'warn'
+    'renoma/no-suspicious-dependencies': 'warn',
+    'renoma/no-unused-dependencies': 'warn'
   }
 })
