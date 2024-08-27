@@ -18,6 +18,7 @@ export const rule = {
       return {
         'Program > JSONExpressionStatement > JSONObjectExpression > JSONProperty[key.value="dependencies"] > JSONObjectExpression':
           (node) => {
+            const packageDir = path.dirname(context.physicalFilename)
             /** @type {Map<string, any>} */
             const dependencyToNode = new Map()
             /** @type {Set<string>} */
@@ -28,30 +29,25 @@ export const rule = {
               })
             )
 
-            node.properties.forEach((p) => {
+            for (const p of node.properties) {
               const dependency = p.key.value
-              const pkgJsonPath = findPkgJsonPath(
-                dependency,
-                path.dirname(context.filename)
-              )
-              if (!pkgJsonPath) return []
+              const pkgJsonPath = findPkgJsonPath(dependency, packageDir)
+              if (!pkgJsonPath) continue
 
               const depPkgJson = JSON.parse(
                 fs.readFileSync(pkgJsonPath, 'utf8')
               )
-              for (const peer of Object.keys(
-                depPkgJson.peerDependencies || {}
-              )) {
+              const peerDeps = Object.keys(depPkgJson.peerDependencies || {})
+              for (const peer of peerDeps) {
                 dependencies.delete(normalizeDependencyName(peer))
               }
-            })
+            }
 
             // Visit all files from this directory
-            const packageDir = path.dirname(context.filename)
             const files = fs
               .readdirSync(packageDir, { withFileTypes: true })
               .map((d) => ({
-                filePath: fs.realpathSync(path.join(packageDir, d.name)),
+                filePath: path.join(packageDir, d.name),
                 dirent: d
               }))
             for (const file of files) {
@@ -99,9 +95,7 @@ export const rule = {
                   ...fs
                     .readdirSync(file.filePath, { withFileTypes: true })
                     .map((d) => ({
-                      filePath: fs.realpathSync(
-                        path.join(file.filePath, d.name)
-                      ),
+                      filePath: path.join(file.filePath, d.name),
                       dirent: d
                     }))
                 )
