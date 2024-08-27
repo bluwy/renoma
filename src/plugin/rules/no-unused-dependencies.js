@@ -2,6 +2,28 @@ import path from 'node:path'
 import fs from 'node:fs'
 import { findPkgJsonPath } from '../../utils.js'
 
+const extensionsWithDependencies = [
+  '.js',
+  '.mjs',
+  '.cjs',
+  '.ts',
+  '.cts',
+  '.mts',
+  '.jsx',
+  '.tsx',
+  '.svelte',
+  '.vue',
+  '.css',
+  '.scss',
+  '.sass',
+  '.less',
+  '.styl',
+  '.stylus',
+  '.pcss',
+  '.postcss',
+  '.sss'
+]
+
 /** @type {import('eslint').Rule.RuleModule} */
 export const rule = {
   meta: {
@@ -53,18 +75,9 @@ export const rule = {
             for (const file of files) {
               if (file.dirent.isFile()) {
                 if (
-                  ![
-                    '.js',
-                    '.mjs',
-                    '.cjs',
-                    '.ts',
-                    '.cts',
-                    '.mts',
-                    '.jsx',
-                    '.tsx',
-                    '.svelte',
-                    '.vue'
-                  ].includes(path.extname(file.filePath))
+                  !extensionsWithDependencies.includes(
+                    path.extname(file.filePath)
+                  )
                 ) {
                   continue
                 }

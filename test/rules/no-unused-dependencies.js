@@ -13,7 +13,7 @@ const fixturePath = (name) =>
 ruleTester.run('no-unused-dependencies', rule, {
   valid: [
     {
-      code: `{ "dependencies": { "used": "^1.0.0" } }`,
+      code: `{ "dependencies": { "used": "^1.0.0", "dir-used": "^1.0.0", "style-used": "^1.0.0" } }`,
       filename: fixturePath('no-unused-dependencies-1/package.json')
     }
   ],
