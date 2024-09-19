@@ -19,14 +19,30 @@ npx renoma --error-limit 2
 # Ignore some packages (comma-separated)
 npx renoma --ignore my-pkg,other-pkg
 
-# Show packages that have no lint errors
-npx renoma --show-passing
+# Show all passing and failing packages
+npx renoma --verbose
 
 # List all rules being used for linting
 npx renoma --list-rules
 
 # Filter and run specific rules only. Supports * as wildcard (comma-separated).
 npx renoma --filter-rules "regexp/strict,renoma/*"
+```
+
+Common commands:
+
+```bash
+# Ignore heavy packages
+npx renoma --ignore typescript,prettier,eslint
+
+# Find unused dependencies
+npx renoma --filter-rules "renoma/no-unused-dependencies"
+
+# Find unused and suspicious dependencies
+npx renoma --filter-rules "renoma/*"
+
+# Show alternative dependencies used by packages (includes devDependencies)
+npx renoma --filter-rules "depend/*"
 ```
 
 ## Sponsors

@@ -1,6 +1,6 @@
 {
   "name": "renoma",
-  "version": "0.1.7",
+  "version": "0.2.0",
   "description": "Opinionated package health checks",
   "type": "module",
   "author": "Bjorn Lu",
