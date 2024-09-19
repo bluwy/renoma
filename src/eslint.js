@@ -19,12 +19,7 @@ import { arraify } from './utils.js'
 const baseEslintConfig = {
   errorOnUnmatchedPattern: false, // dts libraries
   overrideConfigFile: true,
-  overrideConfig: {
-    linterOptions: {
-      reportUnusedDisableDirectives: false,
-    },
-  },
-  baseConfig: [
+  overrideConfig: [
     {
       ignores: [
         // common ignores
@@ -41,6 +36,12 @@ const baseEslintConfig = {
         '**/vendor/**',
         '**/repos/**',
       ],
+    },
+
+    {
+      linterOptions: {
+        reportUnusedDisableDirectives: false,
+      },
     },
 
     // custom eslint checks
@@ -157,7 +158,12 @@ export async function lintPkgDir(pkgDir, filterRules) {
   const eslint = new ESLint({
     ...baseEslintConfig,
     cwd: pkgDir,
-    ruleFilter: filterRules ? ({ruleId}) => isRuleIncluded(ruleId, filterRules) : undefined,
+    ruleFilter({ ruleId }) {
+      // Ignore all core rules. I don't know why they're logged in the first place.
+      if (!ruleId.includes('/')) return false
+      if (filterRules) return isRuleIncluded(ruleId, filterRules)
+      return true
+    },
   })
   const results = await eslint.lintFiles(['./**/*.js', './package.json'])
 

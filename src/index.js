@@ -107,7 +107,7 @@ for (const metadata of dependencyMetadatas) {
       const result = cache.get(cacheKey)
       // `true` means there's no linting errors
       if (result === true) {
-          console.log(c.green('✔ No linting errors!') + '\n')
+        console.log(c.green('✔ No linting errors!') + '\n')
       }
       // `string` points to the first package path that has the linting errors
       else {
@@ -139,4 +139,6 @@ for (const metadata of dependencyMetadatas) {
 
 if (errorCount) {
   process.exit(1)
+} else if (!verbose) {
+  console.log(c.bold(c.green('All good!')))
 }
