@@ -22,7 +22,7 @@ const extensionsWithDependencies = [
   '.stylus',
   '.pcss',
   '.postcss',
-  '.sss'
+  '.sss',
 ]
 
 /** @type {import('eslint').Rule.RuleModule} */
@@ -30,11 +30,11 @@ export const rule = {
   meta: {
     type: 'suggestion',
     docs: {
-      description: 'Disallow any unused dependencies'
+      description: 'Disallow any unused dependencies',
     },
     messages: {
-      default: 'Unused dependency "{{dependency}}" found'
-    }
+      default: 'Unused dependency "{{dependency}}" found',
+    },
   },
   create(context) {
     if (context.filename.endsWith('package.json')) {
@@ -49,7 +49,7 @@ export const rule = {
               node.properties.map((p) => {
                 dependencyToNode.set(p.key.value, p)
                 return p.key.value
-              })
+              }),
             )
 
             for (const p of node.properties) {
@@ -58,7 +58,7 @@ export const rule = {
               if (!pkgJsonPath) continue
 
               const depPkgJson = JSON.parse(
-                fs.readFileSync(pkgJsonPath, 'utf8')
+                fs.readFileSync(pkgJsonPath, 'utf8'),
               )
               const peerDeps = Object.keys(depPkgJson.peerDependencies || {})
               for (const peer of peerDeps) {
@@ -71,13 +71,13 @@ export const rule = {
               .readdirSync(packageDir, { withFileTypes: true })
               .map((d) => ({
                 filePath: path.join(packageDir, d.name),
-                dirent: d
+                dirent: d,
               }))
             for (const file of files) {
               if (file.dirent.isFile()) {
                 if (
                   !extensionsWithDependencies.includes(
-                    path.extname(file.filePath)
+                    path.extname(file.filePath),
                   )
                 ) {
                   continue
@@ -110,8 +110,8 @@ export const rule = {
                     .readdirSync(file.filePath, { withFileTypes: true })
                     .map((d) => ({
                       filePath: path.join(file.filePath, d.name),
-                      dirent: d
-                    }))
+                      dirent: d,
+                    })),
                 )
               }
             }
@@ -122,17 +122,17 @@ export const rule = {
                   node: dependencyToNode.get(dependency),
                   messageId: 'default',
                   data: {
-                    dependency: dependency
-                  }
+                    dependency: dependency,
+                  },
                 })
               }
             }
-          }
+          },
       }
     }
 
     return {}
-  }
+  },
 }
 
 /**

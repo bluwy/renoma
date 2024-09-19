@@ -21,8 +21,8 @@ const baseEslintConfig = {
   overrideConfigFile: true,
   overrideConfig: {
     linterOptions: {
-      reportUnusedDisableDirectives: false
-    }
+      reportUnusedDisableDirectives: false,
+    },
   },
   baseConfig: [
     {
@@ -39,8 +39,8 @@ const baseEslintConfig = {
         '**/e2e/**',
         // vendoring
         '**/vendor/**',
-        '**/repos/**'
-      ]
+        '**/repos/**',
+      ],
     },
 
     // custom eslint checks
@@ -48,11 +48,11 @@ const baseEslintConfig = {
     {
       files: ['package.json'],
       languageOptions: {
-        parser: jsoncParser
+        parser: jsoncParser,
       },
       rules: {
-        'renoma/no-suspicious-dependencies': 'warn'
-      }
+        'renoma/no-suspicious-dependencies': 'warn',
+      },
     },
 
     // eslint-plugin-depend
@@ -60,11 +60,11 @@ const baseEslintConfig = {
     {
       files: ['package.json'],
       languageOptions: {
-        parser: jsoncParser
+        parser: jsoncParser,
       },
       rules: {
-        'depend/ban-dependencies': 'error'
-      }
+        'depend/ban-dependencies': 'error',
+      },
     },
 
     // eslint-plugin-regexp
@@ -72,7 +72,7 @@ const baseEslintConfig = {
     // regexp.configs['flat/recommended'],
     {
       plugins: {
-        regexp
+        regexp,
       },
       rules: {
         // === regexp possible errors ===
@@ -139,14 +139,14 @@ const baseEslintConfig = {
         // Temporarily disable as v flag is quite new (node20 and above)
         // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/unicodeSets
         // 'regexp/require-unicode-sets-regexp': 'error',
-        'regexp/simplify-set-operations': 'error'
+        'regexp/simplify-set-operations': 'error',
         // Objective readability change
         // 'regexp/sort-alternatives': 'error'
         // Disable since non-ignore case usage can sometimes be faster
         // 'regexp/use-ignore-case': 'error'
-      }
-    }
-  ]
+      },
+    },
+  ],
 }
 
 /**
@@ -170,7 +170,7 @@ export async function lintPkgDir(pkgDir, filterRules) {
 
   const eslint = new ESLint({
     ...baseEslintConfig,
-    cwd: pkgDir
+    cwd: pkgDir,
   })
   const results = await eslint.lintFiles(['./**/*.js', './package.json'])
 

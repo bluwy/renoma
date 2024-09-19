@@ -8,8 +8,10 @@
   "bin": "./src/index.js",
   "scripts": {
     "cli": "node src/index.js",
-    "test": "node --test test/index.js",
-    "typecheck": "tsc"
+    "lint": "prettier \"**/*.{js,md}\" --check",
+    "format": "prettier \"**/*.{js,md}\" --write",
+    "typecheck": "tsc",
+    "test": "node --test test/index.js"
   },
   "files": [
     "src"
@@ -31,6 +33,7 @@
   },
   "devDependencies": {
     "@types/node": "^22.5.5",
+    "prettier": "^3.3.3",
     "typescript": "^5.6.2"
   }
 }

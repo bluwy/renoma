@@ -13,8 +13,8 @@ const args = parseArgs({
     ignore: { type: 'string' },
     'show-passing': { type: 'boolean' },
     'filter-rules': { type: 'string' },
-    'list-rules': { type: 'boolean' }
-  }
+    'list-rules': { type: 'boolean' },
+  },
 })
 
 if (args.values.help) {
@@ -44,14 +44,15 @@ if (args.values['list-rules']) {
   const ruleColor = {
     'depend/': c.cyan,
     'regexp/': c.yellow,
-    'renoma/': c.magenta
+    'renoma/': c.magenta,
   }
   console.log(
     listRules()
       .map(
-        (r) => '- ' + c.gray(r.replace(/^.+?\//, (s) => ruleColor[s]?.(s) ?? s))
+        (r) =>
+          '- ' + c.gray(r.replace(/^.+?\//, (s) => ruleColor[s]?.(s) ?? s)),
       )
-      .join('\n')
+      .join('\n'),
   )
 
   process.exit(0)

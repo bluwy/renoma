@@ -42,7 +42,7 @@ export function crawlDependencies(pkgJsonPath, limit) {
   function crawl(pkgDir, parentDepNames, isRoot = false) {
     const pkgJsonContent = fs.readFileSync(
       path.join(pkgDir, 'package.json'),
-      'utf8'
+      'utf8',
     )
     const pkgJson = JSON.parse(pkgJsonContent)
     const pkgDependencies = Object.keys(pkgJson.dependencies || {})
@@ -63,7 +63,7 @@ export function crawlDependencies(pkgJsonPath, limit) {
       metadatas.push({
         pkgDir: path.dirname(depPkgJsonPath),
         pkgGraphPath: parentDepNames.concat(depPkgJson.name),
-        pkgVersion: depPkgJson.version
+        pkgVersion: depPkgJson.version,
       })
 
       if (limit != null && metadatas.length >= limit) {

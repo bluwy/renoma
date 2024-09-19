@@ -4,11 +4,11 @@ export const rule = {
     type: 'suggestion',
     docs: {
       description:
-        'Disallow any suspicious dependencies, e.g. from external URLs'
+        'Disallow any suspicious dependencies, e.g. from external URLs',
     },
     messages: {
-      default: 'Suspicious dependency "{{dependency}}": "{{value}}" found'
-    }
+      default: 'Suspicious dependency "{{dependency}}": "{{value}}" found',
+    },
   },
   create(context) {
     if (context.filename.endsWith('package.json')) {
@@ -30,14 +30,14 @@ export const rule = {
                 messageId: 'default',
                 data: {
                   dependency,
-                  value
-                }
+                  value,
+                },
               })
             }
-          }
+          },
       }
     }
 
     return {}
-  }
+  },
 }

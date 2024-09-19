@@ -5,12 +5,12 @@ import { rule as ruleNonUnusedDependencies } from './rules/no-unused-dependencie
 /** @type {Record<string, import('eslint').Rule.RuleModule>} */
 export const rules = {
   'no-suspicious-dependencies': ruleNonSuspiciousDependencies,
-  'no-unused-dependencies': ruleNonUnusedDependencies
+  'no-unused-dependencies': ruleNonUnusedDependencies,
 }
 
 /** @type {import('eslint').ESLint.Plugin} */
 const plugin = { rules }
 
 export const configs = {
-  recommended: configRecommended(plugin)
+  recommended: configRecommended(plugin),
 }
