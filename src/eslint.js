@@ -154,23 +154,10 @@ const baseEslintConfig = {
  * @param {(string | RegExp)[]} [filterRules]
  */
 export async function lintPkgDir(pkgDir, filterRules) {
-  // NOTE: This mutates `baseEslintConfig` but since this is a CLI that only runs once,
-  // it's fine and easier to implement for now
-  if (filterRules) {
-    for (const config of arraify(baseEslintConfig.baseConfig)) {
-      if (config?.rules) {
-        for (const ruleName of Object.keys(config.rules)) {
-          if (!isRuleIncluded(ruleName, filterRules)) {
-            config.rules[ruleName] = 'off'
-          }
-        }
-      }
-    }
-  }
-
   const eslint = new ESLint({
     ...baseEslintConfig,
     cwd: pkgDir,
+    ruleFilter: filterRules ? ({ruleId}) => isRuleIncluded(ruleId, filterRules) : undefined,
   })
   const results = await eslint.lintFiles(['./**/*.js', './package.json'])
 
