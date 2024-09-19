@@ -3,6 +3,7 @@ import fs from 'node:fs'
 import { findPkgJsonPath } from '../../utils.js'
 
 const extensionsWithDependencies = [
+  '', // some bin paths are JS but have no extension
   '.js',
   '.mjs',
   '.cjs',
