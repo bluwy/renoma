@@ -20,9 +20,9 @@
   "bugs": {
     "url": "https://github.com/bluwy/renoma/issues"
   },
-  "packageManager": "pnpm@9.9.0",
+  "packageManager": "pnpm@9.10.0",
   "dependencies": {
-    "eslint": "^9.9.1",
+    "eslint": "^9.10.0",
     "eslint-plugin-depend": "^0.11.0",
     "eslint-plugin-regexp": "^2.6.0",
     "jsonc-eslint-parser": "^2.4.0",
