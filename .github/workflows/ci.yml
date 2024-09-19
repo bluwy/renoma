@@ -38,8 +38,10 @@ jobs:
       - name: Install dependencies
         run: pnpm install
       - name: Lint
+        if: matrix.os == 'ubuntu-latest'
         run: pnpm lint
       - name: Typecheck
+        if: matrix.os == 'ubuntu-latest'
         run: pnpm typecheck
       - name: Run tests
         run: pnpm test
