@@ -7,6 +7,9 @@ const ruleTester = new RuleTester({
   languageOptions: { parser: jsoncParser }
 })
 
+/**
+ * @param {string} name
+ */
 const fixturePath = (name) =>
   fileURLToPath(new URL(`../fixtures/${name}`, import.meta.url))
 

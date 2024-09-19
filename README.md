@@ -29,6 +29,14 @@ npx renoma --list-rules
 npx renoma --filter-rules "regexp/strict,renoma/*"
 ```
 
+## Sponsors
+
+<p align="center">
+  <a href="https://bjornlu.com/sponsor">
+    <img src="https://bjornlu.com/sponsors.svg" alt="Sponsors" />
+  </a>
+</p>
+
 ## License
 
 MIT

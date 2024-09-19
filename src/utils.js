@@ -11,7 +11,7 @@ import path from 'node:path'
 
 /**
  * @param {string} pkgJsonPath
- * @param {number} limit
+ * @param {number} [limit]
  * @returns {DependencyMetadata[]}
  */
 export function crawlDependencies(pkgJsonPath, limit) {
@@ -20,14 +20,14 @@ export function crawlDependencies(pkgJsonPath, limit) {
 
   crawl(path.dirname(pkgJsonPath), [], true)
 
-  if (metadatas.length > limit) {
+  if (limit != null && metadatas.length >= limit) {
     return metadatas.slice(0, limit)
   }
 
   for (const metadata of metadatas) {
     crawl(metadata.pkgDir, metadata.pkgGraphPath)
 
-    if (metadatas.length > limit) {
+    if (limit != null && metadatas.length >= limit) {
       break
     }
   }
@@ -66,7 +66,7 @@ export function crawlDependencies(pkgJsonPath, limit) {
         pkgVersion: depPkgJson.version
       })
 
-      if (metadatas.length > limit) {
+      if (limit != null && metadatas.length >= limit) {
         break
       }
     }

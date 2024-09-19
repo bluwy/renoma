@@ -135,6 +135,9 @@ export const rule = {
   }
 }
 
+/**
+ * @param {string} dependency
+ */
 function normalizeDependencyName(dependency) {
   if (dependency.startsWith('@types/')) {
     dependency = dependency.slice(7)

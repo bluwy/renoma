@@ -40,6 +40,7 @@ Options
 }
 
 if (args.values['list-rules']) {
+  /** @type {Record<string, import('picocolors/types.js').Formatter>} */
   const ruleColor = {
     'depend/': c.cyan,
     'regexp/': c.yellow,
@@ -47,7 +48,9 @@ if (args.values['list-rules']) {
   }
   console.log(
     listRules()
-      .map((r) => '- ' + c.gray(r.replace(/^.+?\//, (s) => ruleColor[s](s))))
+      .map(
+        (r) => '- ' + c.gray(r.replace(/^.+?\//, (s) => ruleColor[s]?.(s) ?? s))
+      )
       .join('\n')
   )
 

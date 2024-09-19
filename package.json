@@ -8,7 +8,8 @@
   "bin": "./src/index.js",
   "scripts": {
     "cli": "node src/index.js",
-    "test": "node --test test/index.js"
+    "test": "node --test test/index.js",
+    "typecheck": "tsc"
   },
   "files": [
     "src"
@@ -27,5 +28,9 @@
     "eslint-plugin-regexp": "^2.6.0",
     "jsonc-eslint-parser": "^2.4.0",
     "picocolors": "^1.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.5.5",
+    "typescript": "^5.6.2"
   }
 }
