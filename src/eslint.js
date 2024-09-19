@@ -3,6 +3,7 @@ import depend from 'eslint-plugin-depend'
 import regexp from 'eslint-plugin-regexp'
 import * as jsoncParser from 'jsonc-eslint-parser'
 import * as renoma from './plugin/index.js'
+import { arraify } from './utils.js'
 
 // Click on table of https://ota-meshi.github.io/eslint-plugin-regexp/rules/#best-practices
 // and run this to get all best practices name
@@ -150,8 +151,23 @@ const baseEslintConfig = {
 
 /**
  * @param {string} pkgDir
+ * @param {(string | RegExp)[]} [filterRules]
  */
-export async function lintPkgDir(pkgDir) {
+export async function lintPkgDir(pkgDir, filterRules) {
+  // NOTE: This mutates `baseEslintConfig` but since this is a CLI that only runs once,
+  // it's fine and easier to implement for now
+  if (filterRules) {
+    for (const config of arraify(baseEslintConfig.baseConfig)) {
+      if (config?.rules) {
+        for (const ruleName of Object.keys(config.rules)) {
+          if (!isRuleIncluded(ruleName, filterRules)) {
+            config.rules[ruleName] = 'off'
+          }
+        }
+      }
+    }
+  }
+
   const eslint = new ESLint({
     ...baseEslintConfig,
     cwd: pkgDir
@@ -174,4 +190,36 @@ export async function lintPkgDir(pkgDir) {
   const formatter = await eslint.loadFormatter('stylish')
   const resultText = await formatter.format(results)
   return resultText
+}
+
+export function listRules() {
+  /** @type {Set<string>} */
+  const ruleNames = new Set()
+  for (const config of arraify(baseEslintConfig.baseConfig)) {
+    if (config?.rules) {
+      for (const ruleName of Object.keys(config.rules)) {
+        ruleNames.add(ruleName)
+      }
+    }
+  }
+  return [...ruleNames].sort()
+}
+
+/**
+ * @param {string} ruleName
+ * @param {(string | RegExp)[]} filterRules
+ */
+function isRuleIncluded(ruleName, filterRules) {
+  for (const filteredRule of filterRules) {
+    if (typeof filteredRule === 'string') {
+      if (filteredRule === ruleName) {
+        return true
+      }
+    } else {
+      if (filteredRule.test(ruleName)) {
+        return true
+      }
+    }
+  }
+  return false
 }

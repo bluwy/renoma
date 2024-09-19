@@ -21,6 +21,12 @@ npx renoma --ignore my-pkg,other-pkg
 
 # Hide packages that have no lint errors
 npx renoma --hide-passing
+
+# List all rules being used for linting
+npx renoma --list-rules
+
+# Filter and run specific rules only. Supports * as wildcard (comma-separated).
+npx renoma --filter-rules "regexp/strict,renoma/*"
 ```
 
 ## License

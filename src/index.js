@@ -1,14 +1,9 @@
 #!/usr/bin/env node
 
 import { parseArgs } from 'node:util'
-import { lintPkgDir } from './eslint.js'
-import {
-  bold,
-  crawlDependencies,
-  findClosestPkgJsonPath,
-  green,
-  red
-} from './utils.js'
+import c from 'picocolors'
+import { lintPkgDir, listRules } from './eslint.js'
+import { crawlDependencies, findClosestPkgJsonPath } from './utils.js'
 
 const args = parseArgs({
   options: {
@@ -16,7 +11,9 @@ const args = parseArgs({
     limit: { type: 'string' },
     'error-limit': { type: 'string' },
     ignore: { type: 'string' },
-    'hide-passing': { type: 'boolean' }
+    'hide-passing': { type: 'boolean' },
+    'filter-rules': { type: 'string' },
+    'list-rules': { type: 'boolean' }
   }
 })
 
@@ -35,7 +32,24 @@ Options
   --error-limit   Set a limit on how many packages with errors are checked.
   --ignore        Ignore some packages (comma-separated).
   --hide-passing  Whether to hide packages with no linting errors.
+  --filter-rules  Filter and run specific rules only. Supports * as wildcard (comma-separated).
+  --list-rules    List all available lint rules.
 `)
+
+  process.exit(0)
+}
+
+if (args.values['list-rules']) {
+  const ruleColor = {
+    'depend/': c.cyan,
+    'regexp/': c.yellow,
+    'renoma/': c.magenta
+  }
+  console.log(
+    listRules()
+      .map((r) => '- ' + c.gray(r.replace(/^.+?\//, (s) => ruleColor[s](s))))
+      .join('\n')
+  )
 
   process.exit(0)
 }
@@ -53,6 +67,15 @@ const errorLimit = args.values['error-limit']
   ? Number(args.values['error-limit'])
   : undefined
 const hidePassing = args.values['hide-passing']
+const filterRules = args.values['filter-rules']
+  ? args.values['filter-rules'].split(',').map((r) => {
+      if (r.includes('*')) {
+        return new RegExp(r.replace(/\*/g, '.*'))
+      } else {
+        return r
+      }
+    })
+  : undefined
 
 // Metadata
 /** @type {Map<string, true | string>} */
@@ -71,7 +94,7 @@ for (const metadata of dependencyMetadatas) {
   // which packages are being checked now. If it's enabled, we hide it until we know the
   // result of the linting.
   if (!hidePassing) {
-    console.log(bold(title + ':'))
+    console.log(c.bold(title + ':'))
   }
 
   const cacheKey = `${pkgName}@${metadata.pkgVersion}`
@@ -80,24 +103,24 @@ for (const metadata of dependencyMetadatas) {
     // `true` means there's no linting errors
     if (result === true) {
       if (!hidePassing) {
-        console.log(green('✔ No linting errors!') + '\n')
+        console.log(c.green('✔ No linting errors!') + '\n')
       }
     }
     // `string` points to the first package path that has the linting errors
     else {
       if (hidePassing) {
-        console.log(bold(title + ':'))
+        console.log(c.bold(title + ':'))
       }
-      console.log(red(`✖ Has lint errors same as ${result}\n`))
+      console.log(c.red(`✖ Has lint errors same as ${result}\n`))
     }
     continue
   }
 
-  const resultText = await lintPkgDir(metadata.pkgDir)
+  const resultText = await lintPkgDir(metadata.pkgDir, filterRules)
 
   if (resultText) {
     if (hidePassing) {
-      console.log(bold(title + ':'))
+      console.log(c.bold(title + ':'))
     }
     console.log(resultText)
     errorCount++
@@ -107,7 +130,7 @@ for (const metadata of dependencyMetadatas) {
       break
     }
   } else if (!hidePassing) {
-    console.log(green('✔ No linting errors!') + '\n')
+    console.log(c.green('✔ No linting errors!') + '\n')
   }
 
   cache.set(cacheKey, resultText ? title : true)

@@ -111,22 +111,10 @@ export function findPkgJsonPath(pkgName, basedir) {
 }
 
 /**
- * @param {string} str
+ * @param {T | T[]} target
+ * @template T
+ * @returns {T[]}
  */
-export function bold(str) {
-  return `\u001b[1m${str}\u001b[22m`
-}
-
-/**
- * @param {string} str
- */
-export function green(str) {
-  return `\u001b[32m${str}\u001b[39m`
-}
-
-/**
- * @param {string} str
- */
-export function red(str) {
-  return `\u001b[91m${str}\u001b[39m`
+export function arraify(target) {
+  return Array.isArray(target) ? target : [target]
 }
