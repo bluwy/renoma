@@ -11,7 +11,7 @@ const args = parseArgs({
     limit: { type: 'string' },
     'error-limit': { type: 'string' },
     ignore: { type: 'string' },
-    'show-passing': { type: 'boolean' },
+    verbose: { type: 'boolean' },
     'filter-rules': { type: 'string' },
     'list-rules': { type: 'boolean' },
   },
@@ -31,7 +31,7 @@ Options
   --limit         Set a limit on how many packages are checked.
   --error-limit   Set a limit on how many packages with errors are checked.
   --ignore        Ignore some packages (comma-separated).
-  --show-passing  Whether to show packages with no linting errors.
+  --verbose       Show passing and failing state of all packages.
   --filter-rules  Filter and run specific rules only. Supports * as wildcard (comma-separated).
   --list-rules    List all available lint rules.
 `)
@@ -70,7 +70,7 @@ const ignorePkgNames = args.values.ignore ? args.values.ignore.split(',') : []
 const errorLimit = args.values['error-limit']
   ? Number(args.values['error-limit'])
   : undefined
-const showPassing = args.values['show-passing']
+const verbose = !!args.values.verbose
 const filterRules = args.values['filter-rules']
   ? args.values['filter-rules'].split(',').map((r) => {
       if (r.includes('*')) {
@@ -94,28 +94,25 @@ for (const metadata of dependencyMetadatas) {
 
   const title = metadata.pkgGraphPath.join(' > ')
 
-  // If showPassing is enabled, we can always show the title so that the user knows
+  // If verbose is enabled, we can always show the title so that the user knows
   // which packages are being checked now. If it's disabled, we hide it until we know the
   // result of the linting.
-  if (showPassing) {
+  if (verbose) {
     console.log(c.bold(title + ':'))
   }
 
   const cacheKey = `${pkgName}@${metadata.pkgVersion}`
   if (cache.has(cacheKey)) {
-    const result = cache.get(cacheKey)
-    // `true` means there's no linting errors
-    if (result === true) {
-      if (showPassing) {
-        console.log(c.green('✔ No linting errors!') + '\n')
+    if (verbose) {
+      const result = cache.get(cacheKey)
+      // `true` means there's no linting errors
+      if (result === true) {
+          console.log(c.green('✔ No linting errors!') + '\n')
       }
-    }
-    // `string` points to the first package path that has the linting errors
-    else {
-      if (!showPassing) {
-        console.log(c.bold(title + ':'))
+      // `string` points to the first package path that has the linting errors
+      else {
+        console.log(c.red(`✖ Has lint errors same as ${result}\n`))
       }
-      console.log(c.red(`✖ Has lint errors same as ${result}\n`))
     }
     continue
   }
@@ -123,7 +120,7 @@ for (const metadata of dependencyMetadatas) {
   const resultText = await lintPkgDir(metadata.pkgDir, filterRules)
 
   if (resultText) {
-    if (!showPassing) {
+    if (!verbose) {
       console.log(c.bold(title + ':'))
     }
     console.log(resultText)
@@ -133,7 +130,7 @@ for (const metadata of dependencyMetadatas) {
       console.log(`Exiting as reached ${errorLimit} error limit`)
       break
     }
-  } else if (showPassing) {
+  } else if (verbose) {
     console.log(c.green('✔ No linting errors!') + '\n')
   }
 
