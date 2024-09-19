@@ -152,7 +152,7 @@ const baseEslintConfig = {
 
 /**
  * @param {string} pkgDir
- * @param {(string | RegExp)[]} [filterRules]
+ * @param {(string | RegExp)[] | undefined} filterRules
  */
 export async function lintPkgDir(pkgDir, filterRules) {
   const eslint = new ESLint({
@@ -185,12 +185,18 @@ export async function lintPkgDir(pkgDir, filterRules) {
   return resultText
 }
 
-export function listRules() {
+/**
+ * @param {(string | RegExp)[] | undefined} filterRules
+ */
+export function listRules(filterRules) {
   /** @type {Set<string>} */
   const ruleNames = new Set()
-  for (const config of arraify(baseEslintConfig.baseConfig)) {
+  for (const config of arraify(baseEslintConfig.overrideConfig)) {
     if (config?.rules) {
       for (const ruleName of Object.keys(config.rules)) {
+        if (filterRules && !isRuleIncluded(ruleName, filterRules)) {
+          continue
+        }
         ruleNames.add(ruleName)
       }
     }

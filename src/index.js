@@ -39,6 +39,17 @@ Options
   process.exit(0)
 }
 
+// CLI args
+const filterRules = args.values['filter-rules']
+  ? args.values['filter-rules'].split(',').map((r) => {
+      if (r.includes('*')) {
+        return new RegExp(r.replace(/\*/g, '.*'))
+      } else {
+        return r
+      }
+    })
+  : undefined
+
 if (args.values['list-rules']) {
   /** @type {Record<string, import('picocolors/types.js').Formatter>} */
   const ruleColor = {
@@ -47,7 +58,7 @@ if (args.values['list-rules']) {
     'renoma/': c.magenta,
   }
   console.log(
-    listRules()
+    listRules(filterRules)
       .map(
         (r) =>
           '- ' + c.gray(r.replace(/^.+?\//, (s) => ruleColor[s]?.(s) ?? s)),
@@ -71,15 +82,7 @@ const errorLimit = args.values['error-limit']
   ? Number(args.values['error-limit'])
   : undefined
 const verbose = !!args.values.verbose
-const filterRules = args.values['filter-rules']
-  ? args.values['filter-rules'].split(',').map((r) => {
-      if (r.includes('*')) {
-        return new RegExp(r.replace(/\*/g, '.*'))
-      } else {
-        return r
-      }
-    })
-  : undefined
+
 
 // Metadata
 /** @type {Map<string, true | string>} */

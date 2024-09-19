@@ -22,7 +22,7 @@ npx renoma --ignore my-pkg,other-pkg
 # Show all passing and failing packages
 npx renoma --verbose
 
-# List all rules being used for linting
+# List all rules being used for linting (can be affected by --filter-rules)
 npx renoma --list-rules
 
 # Filter and run specific rules only. Supports * as wildcard (comma-separated).
