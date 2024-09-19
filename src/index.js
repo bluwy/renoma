@@ -83,7 +83,6 @@ const errorLimit = args.values['error-limit']
   : undefined
 const verbose = !!args.values.verbose
 
-
 // Metadata
 /** @type {Map<string, true | string>} */
 const cache = new Map()
