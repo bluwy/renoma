@@ -168,11 +168,20 @@ export async function lintPkgDir(pkgDir, filterRules) {
   const results = await eslint.lintFiles(['./**/*.js', './package.json'])
 
   for (const result of results) {
-    // Delete the `Definition for rule '*' was not found` error
+    // Filter out unrelated messages
     result.messages = result.messages.filter((message) => {
+      // Delete the `Definition for rule '*' was not found` error
       if (
         message.message.includes('Definition for rule') &&
         message.message.includes('was not found')
+      ) {
+        return false
+      }
+      // Delete the `Rule "*" is already configured by another configuration comment in the preceding code. This configuration is ignored` error
+      if (
+        message.message.includes(
+          'is already configured by another configuration comment in the preceding code',
+        )
       ) {
         return false
       }
