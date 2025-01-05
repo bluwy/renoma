@@ -24,6 +24,8 @@ const extensionsWithDependencies = [
   '.postcss',
   '.sss',
 ]
+const multilineCommentsRE = /\/\*[\s\S]*?\*\//g
+const singlelineCommentsRE = /\/\/.*/g
 
 /** @type {import('eslint').Rule.RuleModule} */
 export const rule = {
@@ -83,7 +85,9 @@ export const rule = {
                   continue
                 }
 
-                const content = fs.readFileSync(file.filePath, 'utf-8')
+                const content = stripComments(
+                  fs.readFileSync(file.filePath, 'utf-8'),
+                )
                 for (const dependency of dependencies) {
                   const depName = normalizeDependencyName(dependency)
                   if (
@@ -149,4 +153,11 @@ function normalizeDependencyName(dependency) {
   } else {
     return dependency
   }
+}
+
+/**
+ * @param {string} code
+ */
+function stripComments(code) {
+  return code.replace(multilineCommentsRE, '').replace(singlelineCommentsRE, '')
 }

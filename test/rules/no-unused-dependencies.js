@@ -26,5 +26,15 @@ ruleTester.run('no-unused-dependencies', rule, {
       filename: fixturePath('no-unused-dependencies-1/package.json'),
       errors: 1,
     },
+    {
+      code: `{ "dependencies": { "unused-in-singleline-comment": "^1.0.0" } }`,
+      filename: fixturePath('no-unused-dependencies-1/package.json'),
+      errors: 1,
+    },
+    {
+      code: `{ "dependencies": { "unused-in-multiline-comment": "^1.0.0" } }`,
+      filename: fixturePath('no-unused-dependencies-1/package.json'),
+      errors: 1,
+    },
   ],
 })
