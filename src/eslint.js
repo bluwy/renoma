@@ -154,7 +154,7 @@ const baseEslintConfig = {
  * @param {string} pkgDir
  * @param {(string | RegExp)[] | undefined} filterRules
  */
-export async function lintPkgDir(pkgDir, filterRules) {
+export async function lintWithEslint(pkgDir, filterRules) {
   const eslint = new ESLint({
     ...baseEslintConfig,
     cwd: pkgDir,
@@ -197,7 +197,14 @@ export async function lintPkgDir(pkgDir, filterRules) {
   }
 
   const formatter = await eslint.loadFormatter('stylish')
-  const resultText = await formatter.format(results)
+  let resultText = await formatter.format(results)
+
+  if (resultText) {
+    // Strip out the `✖ 11 problems (11 errors, 0 warnings)` part. The result may also contain
+    // publint results, and we don't want to confuse the numbers.
+    resultText = resultText.replace(/✖ \d+ problem.*$/s, '')
+  }
+
   return resultText
 }
 

@@ -2,7 +2,8 @@
 
 import { parseArgs } from 'node:util'
 import c from 'picocolors'
-import { lintPkgDir, listRules } from './eslint.js'
+import { lintWithEslint, listRules } from './eslint.js'
+import { lintWithPublint } from './publint.js'
 import { crawlDependencies, findClosestPkgJsonPath } from './utils.js'
 
 const args = parseArgs({
@@ -40,8 +41,9 @@ Options
 }
 
 // CLI args
-const filterRules = args.values['filter-rules']
-  ? args.values['filter-rules'].split(',').map((r) => {
+const rawFilterRules = args.values['filter-rules']
+const filterRules = rawFilterRules
+  ? rawFilterRules.split(',').map((r) => {
       if (r.includes('*')) {
         return new RegExp(r.replace(/\*/g, '.*'))
       } else {
@@ -57,12 +59,22 @@ if (args.values['list-rules']) {
     'regexp/': c.yellow,
     'renoma/': c.magenta,
   }
+  const enabledRules = listRules(filterRules)
+  // publint is a special rule that's not handled by eslint. it's a separate process instead.
+  if (!filterRules?.includes('publint')) {
+    enabledRules.push('publint')
+  }
   console.log(
-    listRules(filterRules)
-      .map(
-        (r) =>
-          '- ' + c.gray(r.replace(/^.+?\//, (s) => ruleColor[s]?.(s) ?? s)),
-      )
+    enabledRules
+      .map((r) => {
+        if (r.includes('/')) {
+          return (
+            '- ' + c.gray(r.replace(/^.+?\//, (s) => ruleColor[s]?.(s) ?? s))
+          )
+        } else {
+          return '- ' + r
+        }
+      })
       .join('\n'),
   )
 
@@ -87,6 +99,20 @@ const verbose = !!args.values.verbose
 /** @type {Map<string, true | string>} */
 const cache = new Map()
 let errorCount = 0
+
+// Check if we can skip eslint and publint
+const shouldRunEslint =
+  !rawFilterRules ||
+  rawFilterRules
+    .split(',')
+    .some(
+      (r) =>
+        r.startsWith('depend/') ||
+        r.startsWith('regexp/') ||
+        r.startsWith('renoma/'),
+    )
+const shouldRunPublint =
+  !rawFilterRules || rawFilterRules.split(',').includes('publint')
 
 const dependencyMetadatas = crawlDependencies(packageJsonPath, crawlLimit)
 
@@ -119,8 +145,18 @@ for (const metadata of dependencyMetadatas) {
     continue
   }
 
-  const resultText = await lintPkgDir(metadata.pkgDir, filterRules)
+  // Lint the package
+  let resultText = ''
+  if (shouldRunPublint) {
+    const publintResultText = await lintWithPublint(metadata.pkgDir)
+    if (publintResultText) resultText += publintResultText
+  }
+  if (shouldRunEslint) {
+    const eslintResultText = await lintWithEslint(metadata.pkgDir, filterRules)
+    if (eslintResultText) resultText += eslintResultText
+  }
 
+  // Log the results
   if (resultText) {
     if (!verbose) {
       console.log(c.bold(title + ':'))
