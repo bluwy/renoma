@@ -176,7 +176,18 @@ for (const metadata of dependencyMetadatas) {
 }
 
 if (errorCount) {
+  console.log(
+    c.bold(
+      c.blue(
+        `Scanned ${dependencyMetadatas.length} packages. ${errorCount} packages have errors.`,
+      ),
+    ),
+  )
   process.exit(1)
 } else if (!verbose) {
-  console.log(c.bold(c.green('All good!')))
+  console.log(
+    c.bold(
+      c.green(`Scanned ${dependencyMetadatas.length} packages. All good!`),
+    ),
+  )
 }

@@ -4,6 +4,13 @@ A **re**cursive **no**de\_**m**odules **a**nalyzer with opinionated package heal
 
 > NOTE: Please take every lint errors with a grain of salt! Not all suggested changes are necessary and worth the library maintainers' time to review. Make sure to measure and provide an appealing reason for maintainers to accept your PR.
 
+Internally, the CLI uses these tools:
+
+- [publint](https://publint.dev)
+- [eslint-plugin-depend](https://github.com/es-tooling/eslint-plugin-depend)
+- [eslint-plugin-regexp](https://ota-meshi.github.io/eslint-plugin-regexp/)
+- and custom eslint plugins for more dependency checks
+
 ## Usage
 
 ```bash
@@ -40,6 +47,9 @@ npx renoma --filter-rules "renoma/no-unused-dependencies"
 
 # Find unused and suspicious dependencies
 npx renoma --filter-rules "renoma/*"
+
+# Run publint only
+npx renoma --filter-rules "publint"
 
 # Show alternative dependencies used by packages (includes devDependencies)
 npx renoma --filter-rules "depend/*"
