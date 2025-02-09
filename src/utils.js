@@ -58,6 +58,10 @@ export function crawlDependencies(pkgJsonPath, limit) {
       const depPkgJsonPath = findPkgJsonPath(depName, pkgDir)
       if (!depPkgJsonPath) continue
 
+      // Skip for linked packages, as they usually contain the source code
+      // and we don't want to lint them.
+      if (!depPkgJsonPath.includes('node_modules')) continue
+
       const depPkgJson = JSON.parse(fs.readFileSync(depPkgJsonPath, 'utf8'))
 
       metadatas.push({
