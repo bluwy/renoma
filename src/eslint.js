@@ -185,6 +185,13 @@ export async function lintPkgDir(pkgDir, filterRules) {
       ) {
         return false
       }
+      // Delete any parsing errors as sometimes it's not necessarily relevant. e.g. `simple-git-hooks`
+      // `cli.js` has `Parsing error: 'return' outside of function`. This is because ESLint only allows
+      // configuring the `sourceType` for every JS file, but if a JS file is CJS, we can't quite change
+      // it to `sourceType: 'commonjs`` specifically.
+      if (message.message.startsWith('Parsing error:')) {
+        return false
+      }
       return true
     })
   }
