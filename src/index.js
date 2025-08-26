@@ -161,7 +161,9 @@ for (const metadata of dependencyMetadatas) {
     if (!verbose) {
       console.log(c.bold(title + ':'))
     }
-    console.log(resultText)
+    // Result text (especially from eslint) sometimes doesn't close its colors,
+    // so we reset it here just in case.
+    console.log(resultText + c.reset(''))
     errorCount++
 
     if (errorLimit && errorCount >= errorLimit) {
