@@ -5,5 +5,5 @@ import fs from 'node:fs'
 // Import all files from 'rules/*.js`
 const ruleFiles = fs.readdirSync(new URL('./rules', import.meta.url))
 for (const ruleFile of ruleFiles) {
-  import(`./rules/${ruleFile}`)
+  await import(`./rules/${ruleFile}`)
 }
