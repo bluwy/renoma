@@ -9,7 +9,7 @@ Internally, the CLI uses these tools:
 - [publint](https://publint.dev)
 - [eslint-plugin-depend](https://github.com/es-tooling/eslint-plugin-depend)
 - [eslint-plugin-regexp](https://ota-meshi.github.io/eslint-plugin-regexp/)
-- and custom eslint plugins for more dependency checks
+- and [custom eslint rules](#custom-lint-rules) for more dependency checks
 
 ## Usage
 
@@ -54,6 +54,36 @@ npx renoma --filter-rules "publint"
 # Show alternative dependencies used by packages (includes devDependencies)
 npx renoma --filter-rules "depend/*"
 ```
+
+## Custom lint rules
+
+### `renoma/no-missing-sourcemap-sources`
+
+For `.js` and `.d.ts` files that contain an inline sourcemap comment, and for `.map` files, the sourcemap `"sources"` field should reference an existing file. Missing references causes stacktraces to refer to non-existent code paths, making it harder to debug issues, in which case sourcemaps are doing more harm than good.
+
+Sometimes this may be unintentional as the sourcemaps are useful for local development (as the original files exist there), but when published to npm, the original files are not published and causes the missing sources.
+
+**How to fix (either one of these):**
+
+- Publish the original files to npm (e.g. `.ts` files)
+- Include the original files content in the sourcemap `"sourcesContent"` field (e.g. [TypeScript's `inlineSources` option](https://www.typescriptlang.org/tsconfig/#inlineSources))
+- Remove the sourcemap entirely. If the built code is still readable, sourcemaps may not be as necessary.
+
+### `renoma/no-suspicious-dependencies`
+
+Dependencies with values such as `link:` or `npm:` are flagged as suspicious. For example, `"vite": "npm:my-vite-fork@1.0.0"` makes it seem like it depends on `vite`, but in reality it depends on the `my-vite-fork` package, which might not be what most users expect.
+
+**How to fix:**
+
+- Specify the dependency and the version directly, e.g. `"my-pkg": "^1.2.3"`
+
+### `renoma/no-unused-dependencies`
+
+Dependencies that are not referenced in the source code are flagged as unused. This check works on a best-effort basis as dynamic references like `import('vi' + 'te')` are not detected, but generally can help identify actual unused dependencies too.
+
+**How to fix:**
+
+- Remove the unused dependency from `package.json`
 
 ## Sponsors
 
