@@ -38,16 +38,18 @@ export const rule = {
           const match = sourcemapCommentRE.exec(lastComment.value)
           if (!match) return
 
-          const sourcemap = JSON.parse(
+          const sourcemap = tryJsonParse(
             Buffer.from(match[1], 'base64').toString('utf8'),
           )
+          if (!sourcemap) return
           validateSourcemap(sourcemap, lastComment, context)
         },
       }
     } else if (context.filename.endsWith('.map')) {
       return {
         Program() {
-          const sourcemap = JSON.parse(context.sourceCode.text)
+          const sourcemap = tryJsonParse(context.sourceCode.text)
+          if (!sourcemap) return
           validateSourcemap(sourcemap, context.sourceCode.ast, context)
         },
       }
@@ -55,6 +57,17 @@ export const rule = {
 
     return {}
   },
+}
+
+/**
+ * @param {string} text
+ */
+function tryJsonParse(text) {
+  try {
+    return JSON.parse(text)
+  } catch {
+    return null
+  }
 }
 
 /**

@@ -54,7 +54,7 @@ const baseEslintConfig = {
       },
     },
     {
-      files: ['*.d.ts', '*.d.mts, *.d.cts'],
+      files: ['**/*.d.ts', '**/*.d.mts', '**/*.d.cts', '**/*.map'],
       languageOptions: {
         parser: plainText,
       },
@@ -161,7 +161,19 @@ export async function lintWithEslint(pkgDir, filterRules) {
       return true
     },
   })
-  const results = await eslint.lintFiles(['./**/*.js', './package.json'])
+  const results = await eslint.lintFiles([
+    // For regexp and sourcemap checks
+    './**/*.js',
+    // For sourcemap checks
+    './**/*.mjs',
+    './**/*.cjs',
+    './**/*.d.ts',
+    './**/*.d.mts',
+    './**/*.d.cts',
+    './**/*.map',
+    // For package.json deps checks
+    './package.json',
+  ])
 
   for (const result of results) {
     // Filter out unrelated messages
