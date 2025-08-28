@@ -24,6 +24,7 @@ const extensionsWithDependencies = [
   '.postcss',
   '.sss',
 ]
+const knownAmbientDependencies = ['@types/node']
 const multilineCommentsRE = /\/\*[\s\S]*?\*\//g
 const singlelineCommentsRE = /\/\/.*/g
 
@@ -53,6 +54,9 @@ export const rule = {
                 return p.key.value
               }),
             )
+            for (const dep of knownAmbientDependencies) {
+              dependencies.delete(dep)
+            }
 
             for (const p of node.properties) {
               const dependency = p.key.value
