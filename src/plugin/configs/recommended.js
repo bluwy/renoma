@@ -4,6 +4,7 @@ export const config = (plugin) => ({
     renoma: plugin,
   },
   rules: {
+    'renoma/no-missing-sourcemap-sources': 'error',
     'renoma/no-suspicious-dependencies': 'warn',
     'renoma/no-unused-dependencies': 'warn',
   },

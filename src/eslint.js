@@ -2,6 +2,7 @@ import { ESLint } from 'eslint'
 import depend from 'eslint-plugin-depend'
 import regexp from 'eslint-plugin-regexp'
 import * as jsoncParser from 'jsonc-eslint-parser'
+import { parser as plainText } from './plugin/parsers/plain-text.js'
 import * as renoma from './plugin/index.js'
 import { arraify } from './utils.js'
 
@@ -51,22 +52,17 @@ const baseEslintConfig = {
       languageOptions: {
         parser: jsoncParser,
       },
-      rules: {
-        'renoma/no-suspicious-dependencies': 'warn',
+    },
+    {
+      files: ['*.d.ts', '*.d.mts, *.d.cts'],
+      languageOptions: {
+        parser: plainText,
       },
     },
 
     // eslint-plugin-depend
+    // @ts-expect-error is an object
     depend.configs['flat/recommended'],
-    {
-      files: ['package.json'],
-      languageOptions: {
-        parser: jsoncParser,
-      },
-      rules: {
-        'depend/ban-dependencies': 'error',
-      },
-    },
 
     // eslint-plugin-regexp
     // User explicit config below
