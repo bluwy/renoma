@@ -61,12 +61,17 @@ const baseEslintConfig = {
     },
 
     // eslint-plugin-depend
-    // @ts-expect-error is an object
-    depend.configs['flat/recommended'],
+    {
+      files: ['package.json'],
+      plugins: {
+        depend,
+      },
+      rules: {
+        'depend/ban-dependencies': 'error',
+      },
+    },
 
     // eslint-plugin-regexp
-    // User explicit config below
-    // regexp.configs['flat/recommended'],
     {
       plugins: {
         regexp,
