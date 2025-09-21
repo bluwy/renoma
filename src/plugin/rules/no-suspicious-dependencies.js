@@ -13,11 +13,15 @@ export const rule = {
   create(context) {
     if (context.filename.endsWith('package.json')) {
       return {
-        'Program > JSONExpressionStatement > JSONObjectExpression > JSONProperty[key.value="dependencies"] > JSONObjectExpression > JSONProperty':
+        /**
+         * @param {import('@humanwhocodes/momoa').MemberNode} node
+         */
+        'Document > Object > Member[name.value="dependencies"] > Object > Member':
           (node) => {
-            /** @type {string} */
-            const dependency = node.key.value
-            /** @type {string} */
+            if (node.name.type !== 'String' || node.value.type !== 'String')
+              return
+
+            const dependency = node.name.value
             const value = node.value.value
             if (
               (value.includes('/') || value.includes(':')) &&

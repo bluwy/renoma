@@ -1,10 +1,11 @@
 import { fileURLToPath } from 'node:url'
 import { RuleTester } from 'eslint'
-import * as jsoncParser from 'jsonc-eslint-parser'
+import json from '@eslint/json'
 import { rule } from '../../src/plugin/rules/no-unused-dependencies.js'
 
 const ruleTester = new RuleTester({
-  languageOptions: { parser: jsoncParser },
+  language: 'json/json',
+  plugins: { json },
 })
 
 /**

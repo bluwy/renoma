@@ -1,7 +1,7 @@
 import { ESLint } from 'eslint'
+import json from '@eslint/json'
 import depend from 'eslint-plugin-depend'
 import regexp from 'eslint-plugin-regexp'
-import * as jsoncParser from 'jsonc-eslint-parser'
 import { parser as plainText } from './plugin/parsers/plain-text.js'
 import * as renoma from './plugin/index.js'
 import { arraify } from './utils.js'
@@ -49,8 +49,9 @@ const baseEslintConfig = {
     renoma.configs.recommended,
     {
       files: ['package.json'],
-      languageOptions: {
-        parser: jsoncParser,
+      language: 'json/json',
+      plugins: {
+        json,
       },
     },
     {

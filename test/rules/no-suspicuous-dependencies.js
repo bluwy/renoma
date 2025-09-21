@@ -1,9 +1,10 @@
 import { RuleTester } from 'eslint'
-import * as jsoncParser from 'jsonc-eslint-parser'
+import json from '@eslint/json'
 import { rule } from '../../src/plugin/rules/no-suspicious-dependencies.js'
 
 const ruleTester = new RuleTester({
-  languageOptions: { parser: jsoncParser },
+  language: 'json/json',
+  plugins: { json },
 })
 
 ruleTester.run('no-suspicious-dependencies', rule, {
