@@ -2,8 +2,8 @@ import { ESLint } from 'eslint'
 import json from '@eslint/json'
 import depend from 'eslint-plugin-depend'
 import regexp from 'eslint-plugin-regexp'
+import renoma from './plugin/index.js'
 import { parser as plainText } from './plugin/parsers/plain-text.js'
-import * as renoma from './plugin/index.js'
 import { arraify } from './utils.js'
 
 // Click on table of https://ota-meshi.github.io/eslint-plugin-regexp/rules/#best-practices
@@ -45,28 +45,41 @@ const baseEslintConfig = {
       },
     },
 
-    // custom eslint checks
-    renoma.configs.recommended,
+    // custom languages
     {
-      files: ['package.json'],
+      files: ['**/*.json'],
       language: 'json/json',
-      plugins: {
-        json,
-      },
+      plugins: { json },
     },
     {
       files: ['**/*.d.ts', '**/*.d.mts', '**/*.d.cts', '**/*.map'],
       languageOptions: {
+        // for renoma checks
+        // TODO: rewrite as proper eslint language plugin (like `@eslint/json`)
         parser: plainText,
+      },
+    },
+
+    // custom renoma eslint checks
+    {
+      plugins: { renoma },
+      rules: {
+        'renoma/no-missing-sourcemap-sources': 'error',
+      },
+    },
+    {
+      files: ['package.json'],
+      plugins: { renoma },
+      rules: {
+        'renoma/no-suspicious-dependencies': 'warn',
+        'renoma/no-unused-dependencies': 'warn',
       },
     },
 
     // eslint-plugin-depend
     {
       files: ['package.json'],
-      plugins: {
-        depend,
-      },
+      plugins: { depend },
       rules: {
         'depend/ban-dependencies': 'error',
       },
@@ -74,9 +87,7 @@ const baseEslintConfig = {
 
     // eslint-plugin-regexp
     {
-      plugins: {
-        regexp,
-      },
+      plugins: { regexp },
       rules: {
         // === regexp possible errors ===
         'regexp/no-contradiction-with-assertion': 'error',
