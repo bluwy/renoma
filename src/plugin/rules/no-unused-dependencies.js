@@ -42,12 +42,11 @@ export const rule = {
   create(context) {
     if (context.filename.endsWith('package.json')) {
       return {
-        /**
-         * @param {import('@humanwhocodes/momoa').ObjectNode} node
-         */
         'Document > Object > Member[name.value="dependencies"] > Object': (
-          node,
+          _node,
         ) => {
+          /** @type {import('@humanwhocodes/momoa').ObjectNode} */
+          const node = _node
           const packageDir = path.dirname(context.physicalFilename)
           /** @type {Map<string, any>} */
           const dependencyToNode = new Map()

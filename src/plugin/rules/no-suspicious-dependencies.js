@@ -13,11 +13,10 @@ export const rule = {
   create(context) {
     if (context.filename.endsWith('package.json')) {
       return {
-        /**
-         * @param {import('@humanwhocodes/momoa').MemberNode} node
-         */
         'Document > Object > Member[name.value="dependencies"] > Object > Member':
-          (node) => {
+          (_node) => {
+            /** @type {import('@humanwhocodes/momoa').MemberNode} */
+            const node = _node
             if (node.name.type !== 'String' || node.value.type !== 'String')
               return
 

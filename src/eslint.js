@@ -49,6 +49,7 @@ const baseEslintConfig = {
     {
       files: ['**/*.json'],
       language: 'json/json',
+      // @ts-expect-error -- not sure why types seem broken here
       plugins: { json },
     },
     {

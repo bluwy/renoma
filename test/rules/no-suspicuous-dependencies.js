@@ -4,6 +4,7 @@ import { rule } from '../../src/plugin/rules/no-suspicious-dependencies.js'
 
 const ruleTester = new RuleTester({
   language: 'json/json',
+  // @ts-expect-error -- not sure why types seem broken here
   plugins: { json },
 })
 
