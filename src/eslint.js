@@ -87,6 +87,7 @@ const baseEslintConfig = {
 
     // eslint-plugin-regexp
     {
+      files: ['**/*.js', '**/*.mjs', '**/*.cjs'],
       plugins: { regexp },
       rules: {
         // === regexp possible errors ===
@@ -181,9 +182,9 @@ export async function lintWithEslint(pkgDir, filterRules) {
   const results = await eslint.lintFiles([
     // For regexp and sourcemap checks
     './**/*.js',
-    // For sourcemap checks
     './**/*.mjs',
     './**/*.cjs',
+    // For sourcemap checks
     './**/*.d.ts',
     './**/*.d.mts',
     './**/*.d.cts',
