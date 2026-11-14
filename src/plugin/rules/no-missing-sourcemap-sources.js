@@ -1,5 +1,5 @@
-import path from 'node:path'
 import fs from 'node:fs'
+import { pathToFileURL } from 'node:url'
 
 const extensionsWithSourcemapComment = [
   '.js',
@@ -78,13 +78,34 @@ function tryJsonParse(text) {
 function validateSourcemap(sourcemap, node, context) {
   if (typeof sourcemap !== 'object') return true
   if (!sourcemap.sources) return true
-  // If the content for each sources is already provided, then we don't really
-  // need to check if the files exist
-  if (sourcemap.sourcesContent) return true
+  const sourceRoot = sourcemap.sourceRoot || ''
+  const sourcePrefix = sourceRoot
+    ? sourceRoot.endsWith('/')
+      ? sourceRoot
+      : `${sourceRoot}/`
+    : ''
+  const mapURL = pathToFileURL(context.filename)
 
-  for (const source of sourcemap.sources) {
-    const sourcePath = path.resolve(path.dirname(context.filename), source)
-    if (!fs.existsSync(sourcePath)) {
+  for (const [index, source] of sourcemap.sources.entries()) {
+    // Embedded content only covers the source at the same index. An empty
+    // string is also valid content, while null means it must be retrieved.
+    if (
+      source === null ||
+      typeof sourcemap.sourcesContent?.[index] === 'string'
+    ) {
+      continue
+    }
+
+    let sourceURL
+    try {
+      sourceURL = new URL(`${sourcePrefix}${source}`, mapURL)
+    } catch {
+      // An invalid URL cannot point to an available source file.
+    }
+    // External and virtual sources cannot be checked on the local filesystem.
+    if (sourceURL && sourceURL.protocol !== 'file:') continue
+
+    if (!sourceURL || !fs.existsSync(sourceURL)) {
       context.report({
         node,
         messageId: 'default',
