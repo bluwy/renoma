@@ -1,4 +1,4 @@
-import { fileURLToPath } from 'node:url'
+import { fileURLToPath, pathToFileURL } from 'node:url'
 import { RuleTester } from 'eslint'
 import { parser as plainText } from '../../src/plugin/parsers/plain-text.js'
 import { rule } from '../../src/plugin/rules/no-missing-sourcemap-sources.js'
@@ -128,4 +128,127 @@ ruleTester.run('no-missing-sourcemap-sources', rule, {
       errors: 1,
     },
   ],
+})
+
+// Both inline and external maps use the map's location as the resolution base.
+const sourceCases = [
+  {
+    sources: ['present.js'],
+    sourceRoot: 'source-files',
+    valid: true,
+  },
+  {
+    sources: ['present.js'],
+    sourceRoot: 'source-files/',
+    valid: true,
+  },
+  {
+    sources: ['../source-files/present.js'],
+    sourceRoot: 'missing/',
+    valid: true,
+  },
+  {
+    sources: ['source-files/present.js'],
+    sourceRoot: '',
+    valid: true,
+  },
+  {
+    sources: ['missing.js'],
+    sourceRoot: 'source-files',
+    valid: false,
+  },
+  {
+    sources: ['https://example.com/source.js'],
+    valid: true,
+  },
+  {
+    sources: ['source.js'],
+    sourceRoot: 'https://example.com/src',
+    valid: true,
+  },
+  {
+    sources: ['webpack:///src/original.js'],
+    valid: true,
+  },
+  {
+    sources: [pathToFileURL(fixturePath('source-files/present.js')).href],
+    valid: true,
+  },
+  {
+    sources: [pathToFileURL(fixturePath('source-files/missing.js')).href],
+    valid: false,
+  },
+  {
+    sources: ['source-files/with%20space.js'],
+    valid: true,
+  },
+  {
+    sources: ['http://[invalid'],
+    valid: false,
+  },
+  {
+    sources: ['source-files/present.js?version=1#source'],
+    valid: true,
+  },
+  {
+    sources: [null],
+    valid: true,
+  },
+  {
+    sources: ['missing.js'],
+    sourcesContent: [''],
+    valid: true,
+  },
+  {
+    sources: ['embedded.js', 'source-files/present.js'],
+    sourcesContent: ['', null],
+    valid: true,
+  },
+  {
+    sources: ['embedded.js', 'missing.js'],
+    sourcesContent: ['', null],
+    valid: false,
+  },
+  {
+    sources: ['missing.js', 'embedded.js'],
+    sourcesContent: [null, 'export const foo = 1'],
+    valid: false,
+  },
+  {
+    sources: ['missing.js'],
+    sourcesContent: [],
+    valid: false,
+  },
+  {
+    sources: ['embedded.js', 'missing.js'],
+    sourcesContent: ['export const foo = 1'],
+    valid: false,
+  },
+  {
+    sources: ['https://example.com/remote.js', 'missing.js'],
+    sourcesContent: [null, null],
+    valid: false,
+  },
+]
+
+const validSources = []
+const invalidSources = []
+for (const { valid, ...sourceFields } of sourceCases) {
+  const map = { version: 3, names: [], mappings: '', ...sourceFields }
+  for (const inline of [false, true]) {
+    const testCase = {
+      code: inline ? sourcemapComment(map) : JSON.stringify(map),
+      filename: fixturePath(inline ? 'sources.js' : 'sources.js.map'),
+    }
+    if (valid) {
+      validSources.push(testCase)
+    } else {
+      invalidSources.push({ ...testCase, errors: [{ messageId: 'default' }] })
+    }
+  }
+}
+
+ruleTester.run('no-missing-sourcemap-sources resolution', rule, {
+  valid: validSources,
+  invalid: invalidSources,
 })
